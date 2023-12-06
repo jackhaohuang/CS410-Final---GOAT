@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PyScript Example</title>
+    <!-- Include the PyScript CSS -->
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <!-- Include the PyScript JavaScript -->
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+    <h1>Simple PyScript Example</h1>
+
+    <!-- Input field for the user to enter a number -->
+    <label for="num-input">Enter a number:</label>
+    <input type="number" pys-model="num-input" id="num-input"/>
+
+    <!-- Button to trigger the Python function -->
+    <button pys-onClick="double_number">Double the Number!</button>
+
+    <!-- Area to display the result -->
+    <p>Result: <span pys-var="result">0</span></p>
+
+    <!-- Python code -->
+    <py-script>
+        # This Python code will be executed in the browser
+        def double_number():
+            # Get the value from the input field
+            num = float(element('num-input').value)
+            # Double the number
+            doubled_num = num * 2
+            # Display the result
+            element('result').write(doubled_num)
+    </py-script>
+</body>
+</html>

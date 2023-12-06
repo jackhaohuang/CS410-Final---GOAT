@@ -1,25 +1,31 @@
 {
-    "manifest_version": 3,
-    "name": "Course Helper extension",
-    "version": "1.0",
-    "description": "A Chrome extension that suggests three relevant Wikipedia pages based on a given course",
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icon/icon-16.png",
-        "48": "icon/icon-48.png",
-        "128": "icon/icon-128.png"
-      }
-    },
-    "permissions": ["activeTab"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://courses.illinois.edu/schedule/*"],
-        "js": ["content.js"]
-      }
-    ]
-  }
-  
+  "manifest_version": 3,
+  "name": "Course Helper extension",
+  "version": "1.0",
+  "description": "A Chrome extension that suggests three relevant Wikipedia pages based on a given course",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon/icon-16.png",
+      "48": "icon/icon-48.png",
+      "128": "icon/icon-128.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://127.0.0.1/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://courses.illinois.edu/schedule/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "host_permissions": [
+    "http://127.0.0.1/*"
+  ]
+}
