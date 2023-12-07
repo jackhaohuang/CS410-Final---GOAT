@@ -11,7 +11,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 import spacy
 from collections import Counter
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS, cross_origin
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -25,6 +25,7 @@ LINKS = []
 TEST = ""
 
 @app.route('/query_course', methods=['POST'])
+@cross_origin()
 def query_course():
     data = request.json
     course_title = data.get("course_title")
@@ -35,10 +36,10 @@ def query_course():
 
     keywords = extract_keywords(course_title, course_description)
     wikipedia_links = query_wikipedia(keywords)
-    global LINKS, TEST
-    TEST = "hi"
-    print(TEST)
-    LINKS = wikipedia_links
+
+    if not wikipedia_links:
+        keywords = extract_keywords_with_spacy(course_title, course_description)
+        wikipedia_links = query_wikipedia(keywords)
 
     return jsonify({
         "keywords": keywords,
@@ -69,18 +70,42 @@ def query_wikipedia(keywords, lang='en'):
         page = wiki_wiki.page(keyword)
         if page.exists():
             pages.append(page.fullurl)
-
     return pages
 
-# def is_valid_wikipedia_page(title, lang='en'):
-#     user_agent = "CS410 Course Explorer Project/0.1 (thomas1031@163.com)"
-#     wiki_wiki = wikipediaapi.Wikipedia(language=lang, user_agent=user_agent)
-#     page = wiki_wiki.page(title)
-#     return page.exists()
+def is_valid_wikipedia_page(title, lang='en'):
+    user_agent = "CS410 Course Explorer Project/0.1 (thomas1031@163.com)"
+    wiki_wiki = wikipediaapi.Wikipedia(language=lang, user_agent=user_agent)
+    page = wiki_wiki.page(title)
+    return page.exists()
+
+def extract_keywords_with_spacy(title, description, num_keywords=5):
+    combined_text = title + ". " + description
+    # Load a pre-trained spaCy model
+    nlp = spacy.load("en_core_web_sm")  # or "en_core_web_md" for more accuracy
+    doc = nlp(description)
+
+    # Extract phrases and entities
+    phrases = [chunk.text for chunk in doc.noun_chunks]
+    entities = [ent.text for ent in doc.ents]
+    combined_terms = phrases + entities
+
+    # Count and rank terms
+    term_freq = Counter(combined_terms)
+    most_common_terms = term_freq.most_common(num_keywords * 2)  # Increase pool size for filtering
+
+    # Filter terms based on Wikipedia page existence
+    valid_terms = []
+    for term, _ in most_common_terms:
+        if is_valid_wikipedia_page(term) and term not in valid_terms:
+            valid_terms.append(term)
+            if len(valid_terms) == num_keywords:
+                break
+
+    return valid_terms
 
 @app.route('/test', methods=['GET'])
 def test():
-    return jsonify({"test": TEST})
+    return jsonify({"message": LINKS})
 
 if __name__ == '__main__':
     app.run(debug=True)

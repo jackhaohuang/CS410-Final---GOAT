@@ -1,7 +1,9 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log("Content script received a message:", request);
     if (request.action === "fetchData") {
         var courseInfoDiv = document.getElementById('app-course-info');
         if (courseInfoDiv) {
+            console.log("Found course info div");
             var courseTitle = courseInfoDiv.querySelector('.app-text-engage').textContent;
             var courseDescription = courseInfoDiv.querySelectorAll('.col-sm-12')[1].textContent.trim();
 
