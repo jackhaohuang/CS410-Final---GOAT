@@ -12,7 +12,9 @@ from nltk.stem import PorterStemmer
 import spacy
 from collections import Counter
 from flask_cors import CORS, cross_origin
+import os
 
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 nltk.download('punkt')
 nltk.download('stopwords')
 
@@ -25,7 +27,7 @@ LINKS = []
 TEST = ""
 
 @app.route('/query_course', methods=['POST'])
-# @cross_origin()
+@cross_origin()
 def query_course():
     data = request.json
     course_title = data.get("course_title")
