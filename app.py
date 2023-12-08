@@ -19,13 +19,13 @@ nltk.download('stopwords')
 nlp = spacy.load("en_core_web_md")
 
 app = Flask(__name__)
-CORS(app)  #
+CORS(app)
 
 LINKS = []
 TEST = ""
 
 @app.route('/query_course', methods=['POST'])
-@cross_origin()
+# @cross_origin()
 def query_course():
     data = request.json
     course_title = data.get("course_title")
@@ -108,4 +108,4 @@ def test():
     return jsonify({"message": LINKS})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
